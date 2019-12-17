@@ -10,6 +10,13 @@ Rust implementation of Web3.js library.
 
 [Documentation](http://tomusdrw.github.io/rust-web3/index.html)
 
+## Simple Receipt Proof
+
+```asciidoc
+cargo run --example simple_proof --release
+```
+Note: The default web3 api is http://localhost:8545 , you can replace it with your own API. (e.g. Infura)
+
 ## Usage
 
 First, add this to your `Cargo.toml`:
