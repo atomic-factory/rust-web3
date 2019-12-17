@@ -65,6 +65,8 @@ pub struct Receipt {
     /// Logs bloom
     #[serde(rename = "logsBloom")]
     pub logs_bloom: H2048,
+    /// Post transaction state root (pre Byzantium)
+    pub root: Option<H256>,
 }
 
 /// Raw bytes of a signed, but not yet sent transaction

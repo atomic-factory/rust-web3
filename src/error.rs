@@ -60,6 +60,12 @@ impl From<EthsignError> for Error {
     }
 }
 
+impl From<trie::TrieError> for Error {
+    fn from(err: trie::TrieError) -> Self {
+        Error::Decoder(format!("{:?}", err)).into()
+    }
+}
+
 impl Clone for Error {
     fn clone(&self) -> Self {
         use self::Error::*;

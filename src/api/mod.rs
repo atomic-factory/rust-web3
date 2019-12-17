@@ -10,6 +10,7 @@ mod parity_set;
 mod personal;
 mod traces;
 mod web3;
+mod darwinia;
 
 pub use self::accounts::{Accounts, SignTransactionFuture};
 pub use self::eth::Eth;
@@ -21,6 +22,7 @@ pub use self::parity_set::ParitySet;
 pub use self::personal::Personal;
 pub use self::traces::Traces;
 pub use self::web3::Web3 as Web3Api;
+pub use self::darwinia::{Darwinia, ReceiptProof};
 
 use crate::types::{Bytes, TransactionRequest, U64};
 use crate::{confirm, DuplexTransport, Error, Transport};

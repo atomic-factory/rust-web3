@@ -360,6 +360,7 @@ mod tests {
             logs: vec![],
             status: Some(1.into()),
             logs_bloom: Default::default(),
+            root: None,
         };
 
         let poll_interval = Duration::from_secs(0);

@@ -14,6 +14,7 @@ mod transaction_id;
 mod transaction_request;
 mod uint;
 mod work;
+mod raw;
 
 pub use self::block::{Block, BlockHeader, BlockId, BlockNumber};
 pub use self::bytes::Bytes;
@@ -37,6 +38,7 @@ pub use self::transaction_id::TransactionId;
 pub use self::transaction_request::{CallRequest, TransactionCondition, TransactionRequest};
 pub use self::uint::{H128, H160, H2048, H256, H512, H520, H64, U128, U256, U64};
 pub use self::work::Work;
+pub use self::raw::{Receipt as RawReceipt, Header as RawHeader};
 
 /// Address
 pub type Address = H160;

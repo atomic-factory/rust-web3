@@ -44,6 +44,52 @@ where
     }
 }
 
+#[derive(Debug)]
+pub struct BatchCallFuture<T, F> {
+    inner: F,
+    _marker: PhantomData<T>,
+}
+
+impl<T, F> BatchCallFuture<T, F> {
+    /// Create a new CallFuture wrapping the inner future.
+    pub fn new(inner: F) -> Self {
+        BatchCallFuture {
+            inner: inner,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<T: serde::de::DeserializeOwned, F> Future for BatchCallFuture<T, F>
+    where
+        F: Future<Item = Vec<::std::result::Result<rpc::Value, Error>>, Error = Error>,
+{
+    type Item = Vec<T>;
+    type Error = Error;
+
+    fn poll(&mut self) -> Poll<Vec<T>, Error> {
+        match self.inner.poll() {
+            Ok(Async::Ready(v)) => {
+                let mut out = Vec::<T>::new();
+                v.into_iter().for_each(|x| {
+                    match x {
+                        Ok(value) => {
+                            match serde_json::from_value(value) {
+                                Ok(rv) => out.push(rv),
+                                Err(e) => { () }
+                            }
+                        },
+                        Err(e) => return ()
+                    }
+                });
+                Ok(out.into())
+            },
+            Ok(Async::NotReady) => Ok(Async::NotReady),
+            Err(e) => Err(e),
+        }
+    }
+}
+
 /// Serialize a type. Panics if the type is returns error during serialization.
 pub fn serialize<T: serde::Serialize>(t: &T) -> rpc::Value {
     serde_json::to_value(t).expect("Types never fail to serialize.")
