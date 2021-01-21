@@ -325,6 +325,41 @@ mod contract_signing {
             )
             .await
         }
+
+        /// Execute a signed contract function and without wait
+        pub async fn signed_call(
+            &self,
+            func: &str,
+            params: impl Tokenize,
+            options: Options,
+            key: impl signing::Key,
+        ) -> crate::Result<H256> {
+            let poll_interval = time::Duration::from_secs(1);
+
+            let fn_data = self
+                .abi
+                .function(func)
+                .and_then(|function| function.encode_input(&params.into_tokens()))
+                // TODO [ToDr] SendTransactionWithConfirmation should support custom error type (so that we can return
+                // `contract::Error` instead of more generic `Error`.
+                .map_err(|err| crate::error::Error::Decoder(format!("{:?}", err)))?;
+            let accounts = Accounts::new(self.eth.transport().clone());
+            let mut tx = TransactionParameters {
+                nonce: options.nonce,
+                to: Some(self.address),
+                gas_price: options.gas_price,
+                data: Bytes(fn_data),
+                ..Default::default()
+            };
+            if let Some(gas) = options.gas {
+                tx.gas = gas;
+            }
+            if let Some(value) = options.value {
+                tx.value = value;
+            }
+            let signed = accounts.sign_transaction(tx, key).await?;
+            Eth::new(&self.eth.transport().clone()).send_raw_transaction(signed.raw_transaction).await
+        }
     }
 }
 
